@@ -191,23 +191,23 @@ UI Fonts: Inter, Plus Jakarta Sans, DM Sans, Manrope, Cabinet Grotesk
 
 ```mermaid
 flowchart TB
-    subgraph Browser[Browser — Client Side]
-        UI[MahinkApp UI]
-        LS[(localStorage)]
-        Editor[TipTap Editor]
-        Cover[tldraw Canvas]
-        AI[AI Panel]
+    subgraph Browser["Browser — Client Side"]
+        UI["MahinkApp UI"]
+        LS[("localStorage")]
+        Editor["TipTap Editor"]
+        Cover["tldraw Canvas"]
+        AI["AI Panel"]
     end
 
-    subgraph Next[Next.js Server]
-        Proxy[/api/ai/proxy]
-        TTS[/api/export/audiobook]
-        Video[/api/export/video]
-        Models[/api/ai/models]
+    subgraph Next["Next.js Server"]
+        Proxy["/api/ai/proxy"]
+        TTS["/api/export/audiobook"]
+        Video["/api/export/video"]
+        Models["/api/ai/models"]
     end
 
-    subgraph External[External Services]
-        AI_Providers[OpenAI / Anthropic / NVIDIA / etc.]
+    subgraph External["External Services"]
+        AI_Providers["OpenAI / Anthropic / NVIDIA / etc."]
     end
 
     UI <--> LS
@@ -222,9 +222,9 @@ flowchart TB
     UI --> Video
     UI --> Models
     
-    TTS --> HuggingFace[HuggingFace Transformers.js]
-    Video --> sharp[sharp image processing]
-    Video --> ffmpeg[ffmpeg encoding]
+    TTS --> HF["HuggingFace Transformers.js"]
+    Video --> sharp["sharp image processing"]
+    Video --> ffmpeg["ffmpeg encoding"]
 ```
 
 ### Component Architecture
@@ -272,25 +272,25 @@ flowchart LR
 sequenceDiagram
     participant User
     participant AIPanel
-    participant lib/ai
-    participant lib/providers
-    participant API as /api/ai/proxy
-    participant Provider as AI Provider (e.g. NVIDIA)
+    participant AILib as "lib/ai"
+    participant ProvLib as "lib/providers"
+    participant API as "/api/ai/proxy"
+    participant Provider as "AI Provider (e.g. NVIDIA)"
 
     User->>AIPanel: Types prompt + selects action
-    AIPanel->>lib/ai: executeAiAction()
-    lib/ai->>lib/ai: Build context prompt (book, chapter, selection, style)
-    lib/ai->>lib/ai: Assemble messages (system + history + user)
-    lib/ai->>lib/providers: runProviderChat()
-    lib/providers->>API: POST (protocol, apiKey, model, messages)
+    AIPanel->>AILib: executeAiAction()
+    AILib->>AILib: Build context prompt (book, chapter, selection, style)
+    AILib->>AILib: Assemble messages (system + history + user)
+    AILib->>ProvLib: runProviderChat()
+    ProvLib->>API: POST (protocol, apiKey, model, messages)
     API->>Provider: Forward request (OpenAI-compatible)
     Provider-->>API: Stream response
-    API-->>lib/providers: Stream response
-    lib/providers-->>lib/ai: Token stream with onChunk()
-    lib/ai-->>AIPanel: Streaming tokens
+    API-->>ProvLib: Stream response
+    ProvLib-->>AILib: Token stream with onChunk()
+    AILib-->>AIPanel: Streaming tokens
     AIPanel-->>User: Display streaming response
-    Note over lib/ai: If tool calls requested, execute them
-    Note over lib/ai: Save conversation + usage to localStorage
+    Note over AILib: If tool calls requested, execute them
+    Note over AILib: Save conversation + usage to localStorage
 ```
 
 ---
@@ -498,8 +498,8 @@ flowchart LR
         CoverAI[Cover AIPanel]
     end
 
-    subgraph Proxy[Next.js API Proxy]
-        /api/ai/proxy
+    subgraph Proxy["Next.js API Proxy"]
+        ProxyEndpoint["/api/ai/proxy"]
     end
 
     subgraph Providers[Provider Adapters]
@@ -528,13 +528,13 @@ flowchart LR
         LOCAL[Local Transformers.js]
     end
 
-    AIPanel --> Proxy
-    CoverAI --> Proxy
-    Proxy --> OpenAI
-    Proxy --> Anthropic
-    Proxy --> Google
-    Proxy --> Cohere
-    Proxy --> Custom
+    AIPanel --> ProxyEndpoint
+    CoverAI --> ProxyEndpoint
+    ProxyEndpoint --> OpenAI
+    ProxyEndpoint --> Anthropic
+    ProxyEndpoint --> Google
+    ProxyEndpoint --> Cohere
+    ProxyEndpoint --> Custom
 
     OpenAI --> OAI
     OpenAI --> GRQ
