@@ -205,16 +205,31 @@ export default function ProvidersTab({
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <button
-                  className="btn btn-ghost"
                   onClick={() => onUpdateAiProfile(profile.id, { enabled: !profile.enabled })}
                   style={{
-                    minWidth: 92,
-                    borderColor: profile.enabled ? theme.accent : theme.border,
-                    color: profile.enabled ? theme.accent : theme.textMuted,
+                    width: 44,
+                    height: 24,
+                    borderRadius: 999,
+                    border: "none",
+                    cursor: "pointer",
+                    background: profile.enabled ? theme.accent : theme.surfaceAlt,
+                    position: "relative",
+                    flexShrink: 0,
                   }}
+                  title={profile.enabled ? "Enabled" : "Disabled"}
                 >
-                  <Settings2 size={14} />
-                  {profile.enabled ? "Enabled" : "Disabled"}
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 3,
+                      left: profile.enabled ? 22 : 3,
+                      width: 18,
+                      height: 18,
+                      borderRadius: "50%",
+                      background: "#fff",
+                      transition: "left 0.18s ease",
+                    }}
+                  />
                 </button>
                 <button
                   className="btn btn-ghost"
